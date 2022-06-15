@@ -1,15 +1,21 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+// import { bodyParser }  from 'body-parser';
+const lt = require('localtunnel')
+// import { localtunnel } from 'localtunnel';
+
+const env = require('./util/enviroment');
+const Airfryer = require('./slack-functions/airfryer')
+const JumboAC = require('./slack-functions/jumbo')
+
 const app = express(); 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support url encoded bodies
-const lt = require('localtunnel');
-const bodyParser = require('body-parser');
-const Airfryer = require('./slack-functions/airfryer')
-const env = require('./util/enviroment');
 
 
 const port = env.port;
 const airfryer = new Airfryer;
+const jumbo = new JumboAC;
 let tunnel;
 
 app.get('/', (req, res) => {       
@@ -33,6 +39,24 @@ app.post('/slack/airfryer', async (req, res) => {
     airfryer.postAirfryerModal(req, res);
 });
 
+app.post('/slack/jumboMand', async (req, res) => {
+    res.status(200).end();
+    jumbo.getMand(req, res);
+});
+
+app.post('/slack/events', async (req, res) => {
+    const event = req.body.event;
+    switch(event.type) {
+        case 'message':
+            jumbo.addToMand(event);
+            return;
+    }
+    challenge = req.body.challenge;
+    res.status(200).send({challenge: challenge}).end();
+    jumbo.getMand(req, res);
+});
+
+
 //Add new interactions to the switch
 app.post('/slack/interactivity', async (req, res) => {
     res.status(200).end();
@@ -44,5 +68,5 @@ app.post('/slack/interactivity', async (req, res) => {
         case 'modal':
             airfryer.getVoorraad(payload);
             break;
-        }
-    })
+    }
+});
