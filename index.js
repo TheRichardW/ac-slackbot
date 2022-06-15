@@ -6,7 +6,7 @@ const lt = require('localtunnel')
 
 const env = require('./util/enviroment');
 const Airfryer = require('./slack-functions/airfryer')
-const JumboAC = require('./slack-functions/jumbo')
+const JumboAC = require('./slack-functions/jumbo');
 
 const app = express(); 
 app.use(bodyParser.json()); // support json encoded bodies
@@ -44,21 +44,24 @@ app.post('/slack/jumboMand', async (req, res) => {
     jumbo.getMand(req, res);
 });
 
+
+//Add new events to the switch
 app.post('/slack/events', async (req, res) => {
     const event = req.body.event;
+    
     if('challenge'in req.body) {
         challenge = req.body.challenge;
         res.status(200).send({challenge: challenge}).end();
     }
-
-    switch(event.type) {
-        case 'message':
-            jumbo.addToMand(event);
-            res.status(200).end();
-            return;
-    }
-
     
+    if(!event.hasOwnProperty('bot_id')) {
+        switch(event.type) {
+            case 'message':
+                jumbo.addToMand(event);
+                res.status(200).end();
+                return;
+        }
+    }
 });
 
 
