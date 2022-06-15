@@ -6,6 +6,6 @@ module.exports = {
         lunch_id: process.env.lunch_id,
         richards_id: process.env.richards_id
     },
-    jumbo: process.env.jumbo_key,
+    jumbo_key: process.env.jumbo_key,
     port: process.env.port
 }

@@ -26,9 +26,9 @@ app.listen(port, () => {
     console.log(`Now listening on port ${port}`); 
 });
 
-//Makes tunnel to https://adcalls.loca.lt
+//Makes tunnel to https://slack-adcalls.loca.lt
 async function createTunnel() {
-    tunnel = await lt(port,{subdomain: '/adcalls'}).catch(err => console.log(err));
+    tunnel = await lt(port, {subdomain: '/slack-adcalls'}).catch(err => console.log(err));
     console.log('The tunnel to ' + tunnel.url + ' is dug');
 }
 createTunnel()
@@ -46,14 +46,19 @@ app.post('/slack/jumboMand', async (req, res) => {
 
 app.post('/slack/events', async (req, res) => {
     const event = req.body.event;
+    if('challenge'in req.body) {
+        challenge = req.body.challenge;
+        res.status(200).send({challenge: challenge}).end();
+    }
+
     switch(event.type) {
         case 'message':
             jumbo.addToMand(event);
+            res.status(200).end();
             return;
     }
-    challenge = req.body.challenge;
-    res.status(200).send({challenge: challenge}).end();
-    jumbo.getMand(req, res);
+
+    
 });
 
 

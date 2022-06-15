@@ -14,6 +14,7 @@ let jumbo;
 module.exports = class JumboAC {
     
     constructor() {
+        console.log('Jumbo is loaded')
         this.loginJumbo();
     }
     
@@ -23,10 +24,8 @@ module.exports = class JumboAC {
     }
 
     async getMand(req, res) {
-        // console.log(req)
         const mand = await this.jumbo?.basket().getMyBasket({store_id:3520});
         const blocks = await this.createText(mand);
-        console.log(blocks);
         const body = {
             channel: channel,
             text: 'Boodschappenlijst is leeg',
@@ -42,45 +41,50 @@ module.exports = class JumboAC {
 
     async addToMand(data) {
         const textParts = data.text.split(' ');
-        console.log(channel);
         const endOfUrl = textParts[0].indexOf('>');
         const url = textParts[0].substr(1,endOfUrl-1);
 
         const isUrl = this.validURL(url);
-        console.log(data);
-        console.log(data.bot_id);
-        console.log(data.user);
-        console.log(data.hasOwnProperty('bot_id'));
+  
+        if (isUrl) {
+            if (!data.hasOwnProperty('bot_id') || url.includes('jumbo')) {
+                const splitUrl = url.split('-');
+                const sku = splitUrl[splitUrl.length-1]
 
-        if (isUrl && !data.hasOwnProperty('bot_id') && url.includes('jumbo')) {
-            const splitUrl = url.split('-');
-            const sku = splitUrl[splitUrl.length-1]
-            if(textParts > 0){
-                await this.jumbo?.basket().addToBasket({items:[{sku: sku, quantity: textParts[1]}]})
-            } else {
-                await this.jumbo?.basket().addToBasket({items:[{sku: sku, quantity: 1}]})
-            }
-            let res = await axios.post(urlMessage,
-                {
-                    channel: channel,
-                    text: 'Dit is een geldige jumbo url',
-                },
-                { headers: 
-                    { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
-                });
-        } else {
-            console.log('false');
-            return;
-            res = await axios.post(urlMessage,{
-                    channel: channel,
-                    text: 'Dit is geen geldige jumbo url',
-                },
-                { headers: 
-                    { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
+                let quantity = 1;
+                if(textParts.length > 1){
+                    quantity = textParts[1].trim();
                 }
-            );
-        }
+                
+                const mandje = await this.jumbo?.basket().getMyBasket({store_id:3520});
 
+                mandje.products.forEach((product, index) => {
+                    if(product.sku == sku) {
+                        product.quantity = 0
+                    }
+                })
+
+                mandje.products.push({sku: sku, quantity: quantity})
+
+                await this.jumbo?.jumboBasket.addToBasket({items:mandje.products});
+                const urlSlash = splitUrl[0].split('/');
+                let productName = urlSlash[urlSlash.length-1] + ' ';
+                splitUrl.forEach((part, index) => {
+                    if(index > 0 && index !== splitUrl.length-1) {
+                        productName += part + ' ';
+                    }
+                })
+                
+                await axios.post(urlMessage,
+                    {
+                        channel: channel,
+                        text: 'Er zit nu ' + quantity + ' keer ' + productName + 'in de MAND' ,
+                    },
+                    { headers: 
+                        { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
+                    });
+            }
+        }
     }
 
 
@@ -116,7 +120,6 @@ module.exports = class JumboAC {
 
         try {
             url = new URL(str);
-            console.log(url);
         } catch (_) {
             return false;  
         }
