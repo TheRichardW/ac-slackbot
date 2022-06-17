@@ -1,12 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-// import { bodyParser }  from 'body-parser';
+const axios = require('axios');
 const lt = require('localtunnel')
-// import { localtunnel } from 'localtunnel';
 
 const env = require('./util/enviroment');
 const Airfryer = require('./slack-functions/airfryer')
 const JumboAC = require('./slack-functions/jumbo');
+const { json } = require('express');
 
 const app = express(); 
 app.use(bodyParser.json()); // support json encoded bodies
@@ -17,6 +17,9 @@ const port = env.port;
 const airfryer = new Airfryer;
 const jumbo = new JumboAC;
 let tunnel;
+
+const slackToken = env.slack.slack_key;
+const urlView = 'https://slack.com/api/views.open';
 
 app.get('/', (req, res) => {       
     res.sendFile('index.html', {root: __dirname});  
@@ -54,10 +57,10 @@ app.post('/slack/events', async (req, res) => {
         res.status(200).send({challenge: challenge}).end();
     }
     
-    if(!event.hasOwnProperty('bot_id')) {
+    if(!event.hasOwnProperty('bot_id') || event.username == 'Jumbo Mand') {
         switch(event.type) {
             case 'message':
-                jumbo.addToMand(event);
+                whatMessage(event);
                 res.status(200).end();
                 return;
         }
@@ -67,14 +70,63 @@ app.post('/slack/events', async (req, res) => {
 
 //Add new interactions to the switch
 app.post('/slack/interactivity', async (req, res) => {
-    res.status(200).end();
-     
     let payload = JSON.parse(req.body.payload);
-    const type = payload.view.type;
+
+    console.log(payload);
+
+    let type = payload.type;
+    if(type == undefined) {
+        type = payload.view.type;
+    }
 
     switch(type) {
         case 'modal':
+            res.status(200).end();
             airfryer.getVoorraad(payload);
+            break;
+        case 'workflow_step_edit':
+            res.status(200).end();
+            sendWorkflow(payload, res);
+            return;
+        case 'view_submission':
+            res.status(200).end();
+            res = await axios.post('https://slack.com/api/workflows.stepCompleted' , 
+            {workflow_step_execute_id: payload.trigger_id}, 
+            { headers: { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }})
+            console.log(res.data);
             break;
     }
 });
+
+function whatMessage(event) {
+    switch(event.text) {
+        case '{{/jumbomand}}':
+            jumbo.getMand('','');
+        default:
+            jumbo.addToMand(event); 
+    }
+}
+
+async function sendWorkflow(payload, res) {
+    workflowModalJson = {
+        trigger_id: payload.trigger_id,
+        view:{
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Hallo",
+                    "emoji": true
+                }
+            },
+        ],
+        "type": "workflow_step"
+        }
+    }
+
+    res = await axios.post(urlView, 
+        workflowModalJson
+      , { headers: { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' } 
+    });
+}
