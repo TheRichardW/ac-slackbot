@@ -1,4 +1,4 @@
-const testjumbo = import("jumbo-wrapper");
+const jumbo = import("jumbo-wrapper");
 const axios = require('axios');
 const env = require('../util/enviroment');
 
@@ -6,7 +6,7 @@ const slackToken = env.slack.slack_key;
 const urlView = 'https://slack.com/api/views.open';
 const urlMessage = 'https://slack.com/api/chat.postMessage';
 
-// const channel = env.slack.lunch_id //lunch
+// const channel = env.slack.boodschap_id //boodsschap
 const channel = env.slack.richards_id //Richard
 
 //Jumbo class with all function for /jumbo... in slack
@@ -18,16 +18,22 @@ module.exports = class JumboAC {
     }
     
     async loginJumbo() {
-        this.jumbo = new (await testjumbo).Jumbo();
+        this.jumbo = new (await jumbo).Jumbo();
         await this.jumbo.loginWithToken(env.jumbo_key)
     }
 
     async getMand(req, res) {
         const mand = await this.jumbo?.basket().getMyBasket({store_id:3520});
-        const blocks = await this.createText(mand);
+        
+        const latestOrder = await this.jumbo?.order().getMyLatestOrder();
+        const orderId = parseInt(latestOrder.order.data.id);
+        const fullOrder = await this.jumbo?.order().getMyOrderById(orderId);
+        const products = fullOrder.order.data.orderProducts
+    
+        const blocks = await this.createText(mand, products);
         const body = {
             channel: channel,
-            text: 'Boodschappenlijst is leeg',
+            text: 'Boodschappenlijst',
             blocks: blocks
         }
 
@@ -39,6 +45,7 @@ module.exports = class JumboAC {
     }
 
     async addToMand(data) {
+        // if (data.includes('text')) {
         const textParts = data.text.trim().split(' ');
         const endOfUrl = textParts[0].indexOf('>');
         const url = textParts[0].substr(1,endOfUrl-1);
@@ -78,33 +85,80 @@ module.exports = class JumboAC {
                     { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
                 }
             );
+        // }
         }
     }
 
 
-    createText(mand){
+    createText(mand, products){
         let blocks = [];
-        if (mand.products>0){
+        if (mand.products.length > 0){
             blocks.push({
                 type: 'section',
                 text: {
-                    type: 'plain_text',
-                    text: 'Boodschappenlijst',
-                    emoji: true
+                    type: 'mrkdwn',
+                    text: '*In het winkelmandje: *',
                 }
             },)
         }
+
+        let mandjeString = '';
         mand.products.forEach(product => {
+            mandjeString += '• ' + product.details.title + ', aantal: ' + product.quantity + '\n'
+            
+        });
+        if(mandjeString.length>0){
             blocks.push({
                 type: 'section',
                 text: {
                     type: 'plain_text',
-                    text: product.details.title + ', aantal: ' + product.quantity,
-                    emoji: true
+                    text: mandjeString,
                 }
             },
             );
+        } else {
+            blocks.push({
+                type: 'section',
+                text: {
+                    type: 'plain_text',
+                    text: 'De winkelmand is leeg',
+                }
+            },
+            );
+        }
+        if (products.length > 0){
+            blocks.push({
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: '*In de bestelling: *',
+                }
+            },)
+        }
+
+        let productString = '';
+        products.forEach(product => {
+            productString += '• ' + product.product.title + ', aantal: ' + product.quantity.amount + '\n'
         });
+        if (productString.length > 0){
+            blocks.push({
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: productString,
+                }
+            },
+            );
+        } else {
+            blocks.push({
+                type: 'section',
+                text: {
+                    type: 'plain_text',
+                    text: 'De order is leeg',
+                }
+            },
+            );
+        }
         return blocks;
     }
 
