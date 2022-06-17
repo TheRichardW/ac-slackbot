@@ -5,8 +5,8 @@ const slackToken = env.slack.slack_key;
 const urlView = 'https://slack.com/api/views.open';
 const urlMessage = 'https://slack.com/api/chat.postMessage';
 
-// const channel = env.slack.lunch_id //lunch
-const channel = env.slack.richards_id //Richard
+const channel = env.slack.lunch_id //lunch
+// const channel = env.slack.richards_id //Richard
 
 //Airfryer class with all function for /airfryer in slack
 module.exports = class airfryer {
@@ -44,23 +44,23 @@ module.exports = class airfryer {
     async snackMessages(vrrdMex, vrrdFri, vrrdKro, vrrdKip, vrrdKaa) {
         await axios.post(urlMessage, {
             channel: channel,
-            text: 'Mexicanóóóóóóóóóó (' + vrrdMex + ')'
+            text: 'Mexicanóóóóóóóóóó _(voorraad: ' + vrrdMex + ')_'
           }, { headers: { authorization: `Bearer ${slackToken}` } });
         await axios.post(urlMessage, {
           channel: channel,
-          text: 'Frikandel (' + vrrdFri + ')'
+          text: 'Frikandel _(voorraad: ' + vrrdFri + ')_'
         }, { headers: { authorization: `Bearer ${slackToken}` } });
         await axios.post(urlMessage, {
             channel: channel,
-            text: 'Kroket (' + vrrdKro + ')'
+            text: 'Kroket _(voorraad: ' + vrrdKro + ')_'
           }, { headers: { authorization: `Bearer ${slackToken}` } });
         await axios.post(urlMessage, {
             channel: channel,
-            text: 'Kipcorn (' + vrrdKip + ')'
+            text: 'Kipcorn _(voorraad: ' + vrrdKip + ')_'
           }, { headers: { authorization: `Bearer ${slackToken}` } });
         await axios.post(urlMessage, {
             channel: channel,
-            text: 'Kaassouflé (' + vrrdKaa + ')'
+            text: 'Kaassouflé _(voorraad: ' + vrrdKaa + ')_'
           }, { headers: { authorization: `Bearer ${slackToken}` } });   
     }
 
