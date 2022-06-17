@@ -63,6 +63,9 @@ app.post('/slack/events', async (req, res) => {
                 whatMessage(event);
                 res.status(200).end();
                 return;
+            case 'workflow_step_execute': 
+                jumbo.getMand('', '');
+                res.status(200).end();
         }
     }
 });
@@ -71,9 +74,7 @@ app.post('/slack/events', async (req, res) => {
 //Add new interactions to the switch
 app.post('/slack/interactivity', async (req, res) => {
     let payload = JSON.parse(req.body.payload);
-
-    console.log(payload);
-
+    
     let type = payload.type;
     if(type == undefined) {
         type = payload.view.type;
@@ -90,10 +91,10 @@ app.post('/slack/interactivity', async (req, res) => {
             return;
         case 'view_submission':
             res.status(200).end();
-            res = await axios.post('https://slack.com/api/workflows.stepCompleted' , 
-            {workflow_step_execute_id: payload.trigger_id}, 
+            response = await axios.post('https://slack.com/api/workflows.updateStep' , 
+            {workflow_step_edit_id: payload.workflow_step.workflow_step_edit_id}, 
             { headers: { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }})
-            console.log(res.data);
+            console.log(response.data);
             break;
     }
 });
@@ -120,8 +121,20 @@ async function sendWorkflow(payload, res) {
                     "emoji": true
                 }
             },
+            {
+                "type": "input",
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "plain_text_input-action"
+                },
+                "label": {
+                    "type": "plain_text",
+                    "text": "Label",
+                    "emoji": true
+                }
+            }
         ],
-        "type": "workflow_step"
+        "type": "workflow_step",
         }
     }
 
