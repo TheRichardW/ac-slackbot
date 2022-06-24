@@ -79,7 +79,7 @@ app.post('/slack/interactivity', async (req, res) => {
     if(type == undefined) {
         type = payload.view.type;
     }
-
+    
     switch(type) {
         case 'modal':
             res.status(200).end();
@@ -91,10 +91,13 @@ app.post('/slack/interactivity', async (req, res) => {
             return;
         case 'view_submission':
             res.status(200).end();
+            if(payload.view.title.text == 'Snacks voorraad') {
+                airfryer.getVoorraad(payload)
+                return;
+            }
             response = await axios.post('https://slack.com/api/workflows.updateStep' , 
             {workflow_step_edit_id: payload.workflow_step.workflow_step_edit_id}, 
             { headers: { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }})
-            console.log(response.data);
             break;
     }
 });
