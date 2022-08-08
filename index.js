@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const lt = require('localtunnel')
 
 const env = require('./util/enviroment');
 const Airfryer = require('./slack-functions/airfryer')
@@ -28,13 +27,6 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Now listening on port ${port}`); 
 });
-
-//Makes tunnel to https://slack-adcalls.loca.lt
-async function createTunnel() {
-    tunnel = await lt(port, {subdomain: '/slack-adcalls'}).catch(err => console.log(err));
-    console.log('The tunnel to ' + tunnel.url + ' is dug');
-}
-createTunnel()
 
 //Below are the slack enpoints only add if it is really necessary
 app.post('/slack/airfryer', async (req, res) => {
