@@ -45,47 +45,49 @@ module.exports = class JumboAC {
     }
 
     async addToMand(data) {
-        // if (data.includes('text')) {
-        const textParts = data.text.trim().split(' ');
-        const endOfUrl = textParts[0].indexOf('>');
-        const url = textParts[0].substr(1,endOfUrl-1);
-
-        const isUrl = this.validURL(url);
-  
-        if (isUrl && url.includes('jumbo')) {
-            const splitUrl = url.split('-');
-            const sku = splitUrl[splitUrl.length-1]
-            let quantity = 1;
-            if(textParts.length > 1){
-                quantity = textParts[1].trim();
+        console.log("addToMand")
+        console.log(data.text)
+        if (data.hasOwnProperty('text')) {
+            const textParts = data.text.trim().split(' ');
+            const endOfUrl = textParts[0].indexOf('>');
+            const url = textParts[0].substr(1,endOfUrl-1);
+            
+            const isUrl = this.validURL(url);
+            
+            if (isUrl && url.includes('jumbo')) {
+                const splitUrl = url.split('-');
+                const sku = splitUrl[splitUrl.length-1]
+                let quantity = 1;
+                if(textParts.length > 1){
+                    quantity = textParts[1].trim();
+                }
+                
+                const mandje = await this.jumbo?.basket().getMyBasket({store_id:3520});
+                mandje.products.forEach((product, index) => {
+                    if(product.sku == sku) {
+                        product.quantity = 0
+                    }
+                })
+                mandje.products.push({sku: sku, quantity: quantity})
+                await this.jumbo?.jumboBasket.addToBasket({items:mandje.products});
+                const urlSlash = splitUrl[0].split('/');
+                let productName = urlSlash[urlSlash.length-1] + ' ';
+                splitUrl.forEach((part, index) => {
+                    if(index > 0 && index !== splitUrl.length-1) {
+                        productName += part + ' ';
+                    }
+                })
+                
+                await axios.post(urlMessage,
+                    {
+                        channel: channel,
+                        text: 'Er zit nu ' + quantity + ' keer ' + productName + 'in de MAND' ,
+                    },
+                    { headers: 
+                        { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
+                    }
+                );
             }
-            
-            const mandje = await this.jumbo?.basket().getMyBasket({store_id:3520});
-            mandje.products.forEach((product, index) => {
-                if(product.sku == sku) {
-                    product.quantity = 0
-                }
-            })
-            mandje.products.push({sku: sku, quantity: quantity})
-            await this.jumbo?.jumboBasket.addToBasket({items:mandje.products});
-            const urlSlash = splitUrl[0].split('/');
-            let productName = urlSlash[urlSlash.length-1] + ' ';
-            splitUrl.forEach((part, index) => {
-                if(index > 0 && index !== splitUrl.length-1) {
-                    productName += part + ' ';
-                }
-            })
-            
-            await axios.post(urlMessage,
-                {
-                    channel: channel,
-                    text: 'Er zit nu ' + quantity + ' keer ' + productName + 'in de MAND' ,
-                },
-                { headers: 
-                    { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
-                }
-            );
-        // }
         }
     }
 
