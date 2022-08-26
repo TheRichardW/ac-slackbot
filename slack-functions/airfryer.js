@@ -44,7 +44,7 @@ module.exports = class airfryer {
 
         });
 
-        this.snackMessages(snackVoorraad[0],snackVoorraad[1],snackVoorraad[2],snackVoorraad[3],snackVoorraad[4])
+        this.snackMessages(snackVoorraad[0],snackVoorraad[1],snackVoorraad[2],snackVoorraad[3],snackVoorraad[4],snackVoorraad[5],snackVoorraad[6])
     }
 
     async snackMessages(vrrdMex, vrrdFri, vrrdKro, vrrdKip, vrrdKaa, vrrdLoe, vrrdBam) {
