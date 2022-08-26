@@ -35,13 +35,19 @@ module.exports = class airfryer {
             if(key.kaa !== undefined){
                 snackVoorraad[index] = key.kaa.value
             }
+            if(key.loe !== undefined){
+                snackVoorraad[index] = key.loe.value
+            }
+            if(key.bam !== undefined){
+                snackVoorraad[index] = key.bam.value
+            }
 
         });
 
         this.snackMessages(snackVoorraad[0],snackVoorraad[1],snackVoorraad[2],snackVoorraad[3],snackVoorraad[4])
     }
 
-    async snackMessages(vrrdMex, vrrdFri, vrrdKro, vrrdKip, vrrdKaa) {
+    async snackMessages(vrrdMex, vrrdFri, vrrdKro, vrrdKip, vrrdKaa, vrrdLoe, vrrdBam) {
         await axios.post(urlMessage, {
             channel: channel,
             text: 'Mexicanóóóóóóóóóó _(voorraad: ' + vrrdMex + ')_'
@@ -61,6 +67,14 @@ module.exports = class airfryer {
         await axios.post(urlMessage, {
             channel: channel,
             text: 'Kaassouflé _(voorraad: ' + vrrdKaa + ')_'
+          }, { headers: { authorization: `Bearer ${slackToken}` } });   
+        await axios.post(urlMessage, {
+            channel: channel,
+            text: 'Loempia _(voorraad: ' + vrrdLoe + ')_'
+          }, { headers: { authorization: `Bearer ${slackToken}` } });   
+        await axios.post(urlMessage, {
+            channel: channel,
+            text: 'Bamie schijf _(voorraad: ' + vrrdBam + ')_'
           }, { headers: { authorization: `Bearer ${slackToken}` } });   
     }
 
@@ -150,6 +164,30 @@ module.exports = class airfryer {
                         label: {
                             type: 'plain_text',
                             text: 'Kaassouflé',
+                            emoji: true
+                        }
+                    },
+                    {
+                        type: 'input',
+                        element: {
+                            type: 'plain_text_input',
+                            action_id: 'loe'
+                        },
+                        label: {
+                            type: 'plain_text',
+                            text: 'Loempia',
+                            emoji: true
+                        }
+                    },
+                    {
+                        type: 'input',
+                        element: {
+                            type: 'plain_text_input',
+                            action_id: 'bam'
+                        },
+                        label: {
+                            type: 'plain_text',
+                            text: 'Bamie schijf',
                             emoji: true
                         }
                     }
