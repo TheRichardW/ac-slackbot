@@ -5,8 +5,8 @@ const slackToken = env.slack.slack_key;
 const urlView = 'https://slack.com/api/views.open';
 const urlMessage = 'https://slack.com/api/chat.postMessage';
 
-const channel = env.slack.lunch_id //lunch
-// const channel = env.slack.richards_id //Richard
+// const channel = env.slack.lunch_id //lunch
+const channel = env.slack.richards_id //Richard
 
 //Airfryer class with all function for /airfryer in slack
 module.exports = class airfryer {
@@ -16,7 +16,9 @@ module.exports = class airfryer {
 
     getVoorraad(payload) {
         let values = payload.view.state.values
+        console.log(values)
         let rndmVal = Object.values(values);
+        console.log(rndmVal)
         let snackVoorraad = [] 
 
         rndmVal.forEach((key, index) => {
@@ -44,7 +46,7 @@ module.exports = class airfryer {
 
         });
 
-        this.snackMessages(snackVoorraad[0],snackVoorraad[1],snackVoorraad[2],snackVoorraad[3],snackVoorraad[4])
+        this.snackMessages(snackVoorraad[0],snackVoorraad[1],snackVoorraad[2],snackVoorraad[3],snackVoorraad[4],snackVoorraad[5],snackVoorraad[6])
     }
 
     async snackMessages(vrrdMex, vrrdFri, vrrdKro, vrrdKip, vrrdKaa, vrrdLoe, vrrdBam) {
