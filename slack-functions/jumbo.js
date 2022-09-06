@@ -5,6 +5,7 @@ const env = require('../util/enviroment');
 const slackToken = env.slack.slack_key;
 const urlView = 'https://slack.com/api/views.open';
 const urlMessage = 'https://slack.com/api/chat.postMessage';
+const urlEphermal = 'https://slack.com/api/chat.postEphemeral';
 
 // const channel = env.slack.boodschap_id //boodsschap
 const channel = env.slack.richards_id //Richard
@@ -45,9 +46,7 @@ module.exports = class JumboAC {
     }
 
     async addToMand(data) {
-        console.log("addToMand")
-        console.log(data.text)
-        if (data.hasOwnProperty('text')) {
+        if (data.hasOwnProperty('text') && data.channel === channel) {
             const textParts = data.text.trim().split(' ');
             const endOfUrl = textParts[0].indexOf('>');
             const url = textParts[0].substr(1,endOfUrl-1);
@@ -58,8 +57,18 @@ module.exports = class JumboAC {
                 const splitUrl = url.split('-');
                 const sku = splitUrl[splitUrl.length-1]
                 let quantity = 1;
-                if(textParts.length > 1){
-                    quantity = textParts[1].trim();
+                if(textParts.length > 1 && !isNaN(+textParts[1].trim())){
+                    quantity = Math.round(textParts[1].trim());
+                } else {
+                    axios.post(urlEphermal,
+                        {
+                            channel: channel,
+                            user: data.user,
+                            text: 'Geen geldig nummer ingevoerd' ,
+                        },
+                        { headers: 
+                            { authorization: `Bearer ${slackToken}`, 'content-type': 'application/json' }
+                        });
                 }
                 
                 const mandje = await this.jumbo?.basket().getMyBasket({store_id:3520});
