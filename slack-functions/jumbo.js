@@ -57,7 +57,7 @@ module.exports = class JumboAC {
         const splitUrl = url.split("-");
         const sku = splitUrl[splitUrl.length - 1];
         let quantity = 1;
-        if (textParts.length === 0) {
+        if (textParts.length === 0 || textParts.length === 1) {
         } else if (textParts.length > 1 && !isNaN(+textParts[1].trim())) {
           quantity = Math.round(textParts[1].trim());
         } else {
