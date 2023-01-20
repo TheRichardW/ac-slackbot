@@ -23,7 +23,7 @@ module.exports = class JumboAC {
   }
 
   async getMand(req, res) {
-    const mand = await this.jumbo?.basket().getMyBasket({ store_id: 3520 });
+    const mand = await this.jumbo?.basket().getMyBasket();
 
     const latestOrder = await this.jumbo?.order().getMyLatestOrder();
     const orderId = parseInt(latestOrder.order.data.id);
@@ -77,10 +77,8 @@ module.exports = class JumboAC {
           );
         }
 
-        const mandje = await this.jumbo
-          ?.basket()
-          .getMyBasket({ store_id: 3520 });
-        mandje.products.forEach((product, index) => {
+        const mandje = await this.jumbo?.basket().getMyBasket();
+        mandje.products.forEach((product) => {
           if (product.sku == sku) {
             product.quantity = 0;
           }
@@ -184,6 +182,23 @@ module.exports = class JumboAC {
       });
     }
     return blocks;
+  }
+
+  async vulSnacks(order) {
+    const products = {
+      mex: "225233STK",
+      fri: "133602DS",
+      kro: "203125STK",
+      kip: "225248DS",
+      kaa: "167986DS",
+      loe: "296449STK",
+      bam: "484404DS",
+    };
+    const mandje = await this.jumbo?.basket().getMyBasket();
+    order.forEach((item) => {
+      mandje.products.push({ sku: products[item], quantity: 1 });
+    });
+    await this.jumbo?.jumboBasket.addToBasket({ items: mandje.products });
   }
 
   validURL(str) {

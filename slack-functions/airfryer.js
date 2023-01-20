@@ -1,4 +1,5 @@
 const axios = require("axios");
+const jumbo = require("./jumbo");
 const env = require("../util/enviroment");
 
 const slackToken = env.slack.slack_key;
@@ -40,6 +41,21 @@ module.exports = class airfryer {
       }
       if (key.bam !== undefined) {
         snackVoorraad[index] = key.bam.value;
+      }
+      if (
+        key.vulBoodschappen.value !== undefined ||
+        key.vulBoodschappen.value !== false
+      ) {
+        const order = [];
+        if (key.mex.value < 4) order.push("mex");
+        if (key.fri.value < 4) order.push("fri");
+        if (key.kro.value < 4) order.push("kro");
+        if (key.kip.value < 4) order.push("kip");
+        if (key.kaa.value < 4) order.push("kaa");
+        if (key.loa.value < 4) order.push("loa");
+        if (key.bam.value < 4) order.push("bam");
+        console.log(order);
+        jumbo.vulSnacks(order);
       }
     });
 
@@ -232,6 +248,24 @@ module.exports = class airfryer {
               text: "Bamie schijf",
               emoji: true,
             },
+          },
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "checkboxes",
+                options: [
+                  {
+                    text: {
+                      type: "mrkdwn",
+                      text: "*Vul boodschappen aan*",
+                    },
+                    value: "value-0",
+                  },
+                ],
+                action_id: "vulBoodschappen",
+              },
+            ],
           },
         ],
       },
