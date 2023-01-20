@@ -43,8 +43,8 @@ module.exports = class airfryer {
         snackVoorraad[index] = key.bam.value;
       }
       if (
-        key.vulBoodschappen.value !== undefined ||
-        key.vulBoodschappen.value !== false
+        key.vulSnacks.value !== undefined ||
+        key.vulSnacks.value !== false
       ) {
         const order = [];
         if (key.mex.value < 4) order.push("mex");
@@ -258,12 +258,12 @@ module.exports = class airfryer {
                   {
                     text: {
                       type: "mrkdwn",
-                      text: "*Vul boodschappen aan*",
+                      text: "*Vul snacks aan*",
                     },
                     value: "value-0",
                   },
                 ],
-                action_id: "vulBoodschappen",
+                action_id: "vulSnacks",
               },
             ],
           },
