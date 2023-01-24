@@ -188,7 +188,7 @@ module.exports = class JumboAC {
     const products = {
       mex: "225233STK",
       fri: "133602DS",
-      kro: "203125STK",
+      kro: "157049STK",
       kip: "225248DS",
       kaa: "167986DS",
       loe: "296449STK",

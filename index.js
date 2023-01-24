@@ -5,7 +5,6 @@ const axios = require("axios");
 const env = require("./util/enviroment");
 const Airfryer = require("./slack-functions/airfryer");
 const JumboAC = require("./slack-functions/jumbo");
-const { json } = require("express");
 
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
@@ -14,8 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // support url encoded bodie
 const port = env.port;
 const airfryer = new Airfryer();
 const jumbo = new JumboAC();
-let tunnel;
-
 const slackToken = env.slack.slack_key;
 const urlView = "https://slack.com/api/views.open";
 
