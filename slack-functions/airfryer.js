@@ -1,13 +1,14 @@
 const axios = require("axios");
 const jumbo = require("./jumbo");
 const env = require("../util/enviroment");
+const { Jumbo } = require("jumbo-wrapper");
 
 const slackToken = env.slack.slack_key;
 const urlView = "https://slack.com/api/views.open";
 const urlMessage = "https://slack.com/api/chat.postMessage";
 
-const channel = env.slack.lunch_id; //lunch
-// const channel = env.slack.richards_id //Richard
+// const channel = env.slack.lunch_id; //lunch
+const channel = env.slack.richards_id; //Richard
 
 //Airfryer class with all function for /airfryer in slack
 module.exports = class airfryer {
@@ -19,28 +20,55 @@ module.exports = class airfryer {
     let values = payload.view.state.values;
     let rndmVal = Object.values(values);
     let snackVoorraad = [];
+    let order = [];
 
     rndmVal.forEach((key, index) => {
       if (key.mex !== undefined) {
-        snackVoorraad[index] = key.mex.value;
+        if (key.mex.value < 4) order.push("mex");
+        snackVoorraad[index] = parseInt(key.mex.value);
       }
       if (key.fri !== undefined) {
-        snackVoorraad[index] = key.fri.value;
+        if (key.fri.value < 4) order.push("fri");
+        snackVoorraad[index] = parseInt(key.fri.value);
       }
       if (key.kro !== undefined) {
-        snackVoorraad[index] = key.kro.value;
+        if (key.kro.value < 4) order.push("kro");
+        snackVoorraad[index] = parseInt(key.kro.value);
       }
-      if (key.kip !== undefined) {
-        snackVoorraad[index] = key.kip.value;
+      if (key.kipn !== undefined) {
+        if (key.kipn.value < 4) order.push("kipn");
+        snackVoorraad[index] = parseInt(key.kipn.value);
+      }
+      if (key.kips !== undefined) {
+        if (key.kips.value < 4) order.push("kips");
+        snackVoorraad[index] = parseInt(key.kips.value);
       }
       if (key.kaa !== undefined) {
-        snackVoorraad[index] = key.kaa.value;
+        if (key.kaa.value < 4) order.push("kaa");
+        snackVoorraad[index] = parseInt(key.kaa.value);
       }
       if (key.loe !== undefined) {
-        snackVoorraad[index] = key.loe.value;
+        if (key.loe.value < 4) order.push("loe");
+        snackVoorraad[index] = parseInt(key.loe.value);
       }
       if (key.bam !== undefined) {
-        snackVoorraad[index] = key.bam.value;
+        if (key.bam.value < 4) order.push("bam");
+        snackVoorraad[index] = parseInt(key.bam.value);
+      }
+      if (key.vulSnacks !== undefined) {
+        new jumbo().vulSnacks(order);
+      }
+      if (key.ttlext1 !== undefined) {
+        snackVoorraad[index] = key.ttlext1.value;
+      }
+      if (key.ext1 !== undefined) {
+        snackVoorraad[index] = parseInt(key.ext1.value);
+      }
+      if (key.ttlext2 !== undefined) {
+        snackVoorraad[index] = key.ttlext2.value;
+      }
+      if (key.ext2 !== undefined) {
+        snackVoorraad[index] = parseInt(key.ext2.value);
       }
     });
 
@@ -51,7 +79,14 @@ module.exports = class airfryer {
       snackVoorraad[3],
       snackVoorraad[4],
       snackVoorraad[5],
-      snackVoorraad[6]
+      snackVoorraad[6],
+      snackVoorraad[7],
+      snackVoorraad[8],
+      snackVoorraad[9],
+      snackVoorraad[10],
+      snackVoorraad[11],
+      snackVoorraad[12],
+      snackVoorraad[13]
     );
   }
 
@@ -59,67 +94,107 @@ module.exports = class airfryer {
     vrrdMex,
     vrrdFri,
     vrrdKro,
-    vrrdKip,
+    vrrdKipn,
+    vrrdKips,
     vrrdKaa,
     vrrdLoe,
-    vrrdBam
+    vrrdBam,
+    snackVoorraad,
+    vrrdTtlext1,
+    vrrdext1,
+    vrrdTtlext2,
+    vrrdext2
   ) {
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Mexicanóóóóóóóóóó _(voorraad: " + vrrdMex + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Frikandel _(voorraad: " + vrrdFri + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Kroket _(voorraad: " + vrrdKro + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Kipcorn _(voorraad: " + vrrdKip + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Kaassouflé _(voorraad: " + vrrdKaa + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Loempia _(voorraad: " + vrrdLoe + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
-    await axios.post(
-      urlMessage,
-      {
-        channel: channel,
-        text: "Bamie schijf _(voorraad: " + vrrdBam + ")_",
-      },
-      { headers: { authorization: `Bearer ${slackToken}` } }
-    );
+    if (vrrdMex > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Mexicaantje _(voorraad: " + vrrdMex + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdFri > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Frikandel _(voorraad: " + vrrdFri + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdKro > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Kroket _(voorraad: " + vrrdKro + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdKipn > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Cripsy chicken _(voorraad: " + vrrdKipn + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdKips > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Cripsy chicken spicy _(voorraad: " + vrrdKips + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdKaa > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Kaassouflé _(voorraad: " + vrrdKaa + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdLoe > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Loempia _(voorraad: " + vrrdLoe + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdBam > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: "Bami schijf _(voorraad: " + vrrdBam + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdext1 > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: vrrdTtlext1 + " _(voorraad: " + vrrdext1 + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
+    if (vrrdext2 > 0)
+      await axios.post(
+        urlMessage,
+        {
+          channel: channel,
+          text: vrrdTtlext2 + " _(voorraad: " + vrrdext2 + ")_",
+        },
+        { headers: { authorization: `Bearer ${slackToken}` } }
+      );
   }
 
   async postAirfryerModal(req, res) {
@@ -153,19 +228,21 @@ module.exports = class airfryer {
           {
             type: "input",
             element: {
-              type: "plain_text_input",
+              type: "number_input",
+              is_decimal_allowed: false,
               action_id: "mex",
             },
             label: {
               type: "plain_text",
-              text: "Mexicanóóóóóóóóóó",
+              text: "Mexicaantje",
               emoji: true,
             },
           },
           {
             type: "input",
             element: {
-              type: "plain_text_input",
+              type: "number_input",
+              is_decimal_allowed: false,
               action_id: "fri",
             },
             label: {
@@ -177,7 +254,8 @@ module.exports = class airfryer {
           {
             type: "input",
             element: {
-              type: "plain_text_input",
+              type: "number_input",
+              is_decimal_allowed: false,
               action_id: "kro",
             },
             label: {
@@ -189,19 +267,34 @@ module.exports = class airfryer {
           {
             type: "input",
             element: {
-              type: "plain_text_input",
-              action_id: "kip",
+              type: "number_input",
+              is_decimal_allowed: false,
+              action_id: "kipn",
             },
             label: {
               type: "plain_text",
-              text: "Kipcorn",
+              text: "Cripsy chicken normaal",
               emoji: true,
             },
           },
           {
             type: "input",
             element: {
-              type: "plain_text_input",
+              type: "number_input",
+              is_decimal_allowed: false,
+              action_id: "kips",
+            },
+            label: {
+              type: "plain_text",
+              text: "Cripsy chicken spicy",
+              emoji: true,
+            },
+          },
+          {
+            type: "input",
+            element: {
+              type: "number_input",
+              is_decimal_allowed: false,
               action_id: "kaa",
             },
             label: {
@@ -213,7 +306,8 @@ module.exports = class airfryer {
           {
             type: "input",
             element: {
-              type: "plain_text_input",
+              type: "number_input",
+              is_decimal_allowed: false,
               action_id: "loe",
             },
             label: {
@@ -225,12 +319,13 @@ module.exports = class airfryer {
           {
             type: "input",
             element: {
-              type: "plain_text_input",
+              type: "number_input",
+              is_decimal_allowed: false,
               action_id: "bam",
             },
             label: {
               type: "plain_text",
-              text: "Bamie schijf",
+              text: "Bami schijf",
               emoji: true,
             },
           },
@@ -251,6 +346,60 @@ module.exports = class airfryer {
                 action_id: "vulSnacks",
               },
             ],
+          },
+          {
+            type: "input",
+            optional: true,
+            element: {
+              type: "plain_text_input",
+              action_id: "ttlext1",
+            },
+            label: {
+              type: "plain_text",
+              text: "Titel Extra 1",
+              emoji: true,
+            },
+          },
+          {
+            type: "input",
+            optional: true,
+            element: {
+              type: "number_input",
+              is_decimal_allowed: false,
+              action_id: "ext1",
+            },
+            label: {
+              type: "plain_text",
+              text: "Extra 1",
+              emoji: true,
+            },
+          },
+          {
+            type: "input",
+            optional: true,
+            element: {
+              type: "plain_text_input",
+              action_id: "ttlext2",
+            },
+            label: {
+              type: "plain_text",
+              text: "Titel Extra 2",
+              emoji: true,
+            },
+          },
+          {
+            type: "input",
+            optional: true,
+            element: {
+              type: "number_input",
+              is_decimal_allowed: false,
+              action_id: "ext2",
+            },
+            label: {
+              type: "plain_text",
+              text: "Extra 2",
+              emoji: true,
+            },
           },
         ],
       },
