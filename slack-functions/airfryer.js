@@ -7,8 +7,8 @@ const slackToken = env.slack.slack_key;
 const urlView = "https://slack.com/api/views.open";
 const urlMessage = "https://slack.com/api/chat.postMessage";
 
-// const channel = env.slack.lunch_id; //lunch
-const channel = env.slack.richards_id; //Richard
+const channel = env.slack.lunch_id; //lunch
+// const channel = env.slack.richards_id; //Richard
 
 //Airfryer class with all function for /airfryer in slack
 module.exports = class airfryer {
