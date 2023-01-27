@@ -185,20 +185,24 @@ module.exports = class JumboAC {
   }
 
   async vulSnacks(order) {
+    console.log(order);
     const products = {
       mex: "225233STK",
       fri: "133602DS",
       kro: "157049STK",
-      kip: "225248DS",
+      kipn: "225248DS",
+      kips: "225562DS",
       kaa: "167986DS",
       loe: "296449STK",
       bam: "484404DS",
     };
+
+    await this.loginJumbo();
     const mandje = await this.jumbo?.basket().getMyBasket();
     order.forEach((item) => {
       mandje.products.push({ sku: products[item], quantity: 1 });
     });
-    await this.jumbo?.jumboBasket.addToBasket({ items: mandje.products });
+    await this.jumbo?.jumboBasket.addToBasket({ items: mandje?.products });
   }
 
   validURL(str) {
