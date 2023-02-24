@@ -55,7 +55,7 @@ module.exports = class airfryer {
         if (key.bam.value < 4) order.push("bam");
         snackVoorraad[index] = parseInt(key.bam.value);
       }
-      if (key.vulSnacks !== undefined) {
+      if (key.vulSnacks?.selected_options[0]?.value === "vulAan") {
         new jumbo().vulSnacks(order);
       }
       if (key.ttlext1 !== undefined) {
@@ -340,7 +340,7 @@ module.exports = class airfryer {
                       type: "mrkdwn",
                       text: "*Vul snacks aan*",
                     },
-                    value: "value-0",
+                    value: "vulAan",
                   },
                 ],
                 action_id: "vulSnacks",
