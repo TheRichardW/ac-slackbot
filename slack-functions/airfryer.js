@@ -110,7 +110,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Mexicaantje _(voorraad: " + vrrdMex + ")_",
+          text: ":mexicano: Mexicaantje _(voorraad: " + vrrdMex + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -119,7 +119,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Frikandel _(voorraad: " + vrrdFri + ")_",
+          text: ":frikandel: Frikandel _(voorraad: " + vrrdFri + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -128,7 +128,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Kroket _(voorraad: " + vrrdKro + ")_",
+          text: ":kroket: Kroket _(voorraad: " + vrrdKro + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -137,7 +137,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Cripsy chicken _(voorraad: " + vrrdKipn + ")_",
+          text: ":crispy_chick: Cripsy chicken _(voorraad: " + vrrdKipn + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -146,7 +146,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Cripsy chicken spicy _(voorraad: " + vrrdKips + ")_",
+          text: ":crispy_chick_spicy: Cripsy chicken spicy _(voorraad: " + vrrdKips + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -155,7 +155,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Kaassouflé _(voorraad: " + vrrdKaa + ")_",
+          text: ":kaassoufle: Kaassouflé _(voorraad: " + vrrdKaa + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -164,7 +164,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Loempia _(voorraad: " + vrrdLoe + ")_",
+          text: ":loempia: Loempia _(voorraad: " + vrrdLoe + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -173,7 +173,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: "Bami schijf _(voorraad: " + vrrdBam + ")_",
+          text: ":bami_schijf: Bami schijf _(voorraad: " + vrrdBam + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );

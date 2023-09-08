@@ -52,7 +52,6 @@ module.exports = class JumboAC {
       const url = textParts[0].substr(1, endOfUrl - 1);
 
       const isUrl = this.validURL(url);
-
       if (isUrl && url.includes("jumbo")) {
         const splitUrl = url.split("-");
         const sku = splitUrl[splitUrl.length - 1];
@@ -76,7 +75,6 @@ module.exports = class JumboAC {
             }
           );
         }
-
         const mandje = await this.jumbo?.basket().getMyBasket();
         mandje.products.forEach((product) => {
           if (product.sku == sku) {
@@ -84,7 +82,7 @@ module.exports = class JumboAC {
           }
         });
         mandje.products.push({ sku: sku, quantity: quantity });
-        await this.jumbo?.jumboBasket.addToBasket({ items: mandje.products });
+        await this.jumbo?.jumboBasket.updateBasket({ items: mandje.products });
         const urlSlash = splitUrl[0].split("/");
         let productName = urlSlash[urlSlash.length - 1] + " ";
         splitUrl.forEach((part, index) => {
@@ -97,8 +95,7 @@ module.exports = class JumboAC {
           urlMessage,
           {
             channel: channel,
-            text:
-              "Er zit nu " + quantity + " keer " + productName + "in de MAND",
+            text: "Er zit nu " + quantity + " keer " + productName + "in de MAND",
           },
           {
             headers: {
@@ -202,7 +199,7 @@ module.exports = class JumboAC {
     order.forEach((item) => {
       mandje.products.push({ sku: products[item], quantity: 1 });
     });
-    await this.jumbo?.jumboBasket.addToBasket({ items: mandje?.products });
+    await this.jumbo?.basket().addToBasket({ items: mandje?.products });
   }
 
   validURL(str) {
