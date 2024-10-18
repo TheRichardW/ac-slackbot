@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": ">=0.28.0",
     "dotenv": "^16.0.1",
     "express": ">=4.20.0",
     "jumbo-wrapper": "^2.1.0",
