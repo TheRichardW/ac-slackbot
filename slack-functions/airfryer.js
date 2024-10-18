@@ -36,7 +36,7 @@ module.exports = class airfryer {
         snackVoorraad[index] = parseInt(key.kro.value);
       }
       if (key.kipn !== undefined) {
-        if (key.kipn.value < 4) order.push("kipn");
+        if (key.kipn.value < 4) order.push("kipc");
         snackVoorraad[index] = parseInt(key.kipn.value);
       }
       if (key.kips !== undefined) {
@@ -84,7 +84,7 @@ module.exports = class airfryer {
     vrrdMex,
     vrrdFri,
     vrrdKro,
-    vrrdKipn,
+    vrrdKipc,
     vrrdKips,
     vrrdKaas,
     snackVoorraad,
@@ -120,12 +120,12 @@ module.exports = class airfryer {
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
-    if (vrrdKipn > 0)
+    if (vrrdKipc > 0)
       await axios.post(
         urlMessage,
         {
           channel: channel,
-          text: ":crispy_chick: Cripsy chicken _(voorraad: " + vrrdKipn + ")_",
+          text: ":kipcorn: Kipcorn _(voorraad: " + vrrdKipc + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -239,11 +239,11 @@ module.exports = class airfryer {
             element: {
               type: "number_input",
               is_decimal_allowed: false,
-              action_id: "kipn",
+              action_id: "kipc",
             },
             label: {
               type: "plain_text",
-              text: "Cripsy chicken normaal",
+              text: "Kipcorn",
               emoji: true,
             },
           },
