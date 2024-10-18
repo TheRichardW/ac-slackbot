@@ -47,14 +47,6 @@ module.exports = class airfryer {
         if (key.kaa.value < 4) order.push("kaa");
         snackVoorraad[index] = parseInt(key.kaa.value);
       }
-      if (key.loe !== undefined) {
-        if (key.loe.value < 4) order.push("loe");
-        snackVoorraad[index] = parseInt(key.loe.value);
-      }
-      if (key.bam !== undefined) {
-        if (key.bam.value < 4) order.push("bam");
-        snackVoorraad[index] = parseInt(key.bam.value);
-      }
       if (key.vulSnacks?.selected_options[0]?.value === "vulAan") {
         new jumbo().vulSnacks(order);
       }
@@ -84,9 +76,7 @@ module.exports = class airfryer {
       snackVoorraad[8],
       snackVoorraad[9],
       snackVoorraad[10],
-      snackVoorraad[11],
-      snackVoorraad[12],
-      snackVoorraad[13]
+      snackVoorraad[11]
     );
   }
 
@@ -96,9 +86,7 @@ module.exports = class airfryer {
     vrrdKro,
     vrrdKipn,
     vrrdKips,
-    vrrdKaa,
-    vrrdLoe,
-    vrrdBam,
+    vrrdKaas,
     snackVoorraad,
     vrrdTtlext1,
     vrrdext1,
@@ -155,25 +143,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: ":kaassoufle: Kaassouflé _(voorraad: " + vrrdKaa + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdLoe > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":loempia: Loempia _(voorraad: " + vrrdLoe + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdBam > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":bami_schijf: Bami schijf _(voorraad: " + vrrdBam + ")_",
+          text: ":kaassoufle: Kaassouflé _(voorraad: " + vrrdKaas + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
@@ -300,32 +270,6 @@ module.exports = class airfryer {
             label: {
               type: "plain_text",
               text: "Kaassouflé",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "loe",
-            },
-            label: {
-              type: "plain_text",
-              text: "Loempia",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "bam",
-            },
-            label: {
-              type: "plain_text",
-              text: "Bami schijf",
               emoji: true,
             },
           },
