@@ -86,7 +86,7 @@ module.exports = class airfryer {
     vrrdKro,
     vrrdKipc,
     vrrdKips,
-    vrrdKaas,
+    vrrdKaa,
     snackVoorraad,
     vrrdTtlext1,
     vrrdext1,
@@ -143,7 +143,7 @@ module.exports = class airfryer {
         urlMessage,
         {
           channel: channel,
-          text: ":kaassoufle: Kaassouflé _(voorraad: " + vrrdKaas + ")_",
+          text: ":kaassoufle: Kaassouflé _(voorraad: " + vrrdKaa + ")_",
         },
         { headers: { authorization: `Bearer ${slackToken}` } }
       );
