@@ -35,9 +35,9 @@ module.exports = class airfryer {
         if (key.kro.value < 4) order.push("kro");
         snackVoorraad[index] = parseInt(key.kro.value);
       }
-      if (key.kipn !== undefined) {
-        if (key.kipn.value < 4) order.push("kipc");
-        snackVoorraad[index] = parseInt(key.kipn.value);
+      if (key.kipc !== undefined) {
+        if (key.kipc.value < 4) order.push("kipc");
+        snackVoorraad[index] = parseInt(key.kipc.value);
       }
       if (key.kips !== undefined) {
         if (key.kips.value < 4) order.push("kips");
@@ -93,6 +93,7 @@ module.exports = class airfryer {
     vrrdTtlext2,
     vrrdext2
   ) {
+    console.log(vrrdKipc);
     if (vrrdMex > 0)
       await axios.post(
         urlMessage,
