@@ -1,7 +1,5 @@
 const axios = require("axios");
-const jumbo = require("./jumbo");
 const env = require("../util/enviroment");
-const { Jumbo } = require("jumbo-wrapper");
 
 const slackToken = env.slack.slack_key;
 const urlView = "https://slack.com/api/views.open";
@@ -16,156 +14,78 @@ module.exports = class airfryer {
     console.log("Airfryer is loaded");
   }
 
+  snacksArr = [
+    { key: "mex", name: "Mexicaantje", icon: "mexicano" },
+    { key: "fri", name: "Frikandel", icon: "frikandel" },
+    { key: "kro", name: "Kroket", icon: "kroket" },
+    { key: "kipc", name: "Kipcorn", icon: "kipcorn" },
+    { key: "kips", name: "Crispy chicken spicy", icon: "crispy_chick_spicy" },
+    { key: "kaa", name: "Kaassouflé", icon: "kaassoufle" },
+    { key: "cbi", name: "Chicken bites", icon: "chicken_bites" },
+  ];
+
   getVoorraad(payload) {
     let values = payload.view.state.values;
-    let rndmVal = Object.values(values);
-    let snackVoorraad = [];
-    let order = [];
+    let formAnswers = Object.values(values);
 
-    rndmVal.forEach((key, index) => {
-      if (key.mex !== undefined) {
-        if (key.mex.value < 4) order.push("mex");
-        snackVoorraad[index] = parseInt(key.mex.value);
-      }
-      if (key.fri !== undefined) {
-        if (key.fri.value < 4) order.push("fri");
-        snackVoorraad[index] = parseInt(key.fri.value);
-      }
-      if (key.kro !== undefined) {
-        if (key.kro.value < 4) order.push("kro");
-        snackVoorraad[index] = parseInt(key.kro.value);
-      }
-      if (key.kipc !== undefined) {
-        if (key.kipc.value < 4) order.push("kipc");
-        snackVoorraad[index] = parseInt(key.kipc.value);
-      }
-      if (key.kips !== undefined) {
-        if (key.kips.value < 4) order.push("kips");
-        snackVoorraad[index] = parseInt(key.kips.value);
-      }
-      if (key.kaa !== undefined) {
-        if (key.kaa.value < 4) order.push("kaa");
-        snackVoorraad[index] = parseInt(key.kaa.value);
-      }
-      if (key.vulSnacks?.selected_options[0]?.value === "vulAan") {
-        new jumbo().vulSnacks(order);
-      }
-      if (key.ttlext1 !== undefined) {
-        snackVoorraad[index] = key.ttlext1.value;
-      }
-      if (key.ext1 !== undefined) {
-        snackVoorraad[index] = parseInt(key.ext1.value);
-      }
-      if (key.ttlext2 !== undefined) {
-        snackVoorraad[index] = key.ttlext2.value;
-      }
-      if (key.ext2 !== undefined) {
-        snackVoorraad[index] = parseInt(key.ext2.value);
+    this.snacksArr.forEach(async (snack, index) => {
+      const formAnswer = formAnswers.find(
+        (fA) => Object.keys(fA)[0] === snack.key
+      );
+      const amount = formAnswer[snack.key].value;
+      if (amount > 0) {
+        this.sendMessage(snack, amount);
       }
     });
 
-    this.snackMessages(
-      snackVoorraad[0],
-      snackVoorraad[1],
-      snackVoorraad[2],
-      snackVoorraad[3],
-      snackVoorraad[4],
-      snackVoorraad[5],
-      snackVoorraad[6],
-      snackVoorraad[7],
-      snackVoorraad[8],
-      snackVoorraad[9],
-      snackVoorraad[10],
-      snackVoorraad[11]
+    const formAnswerTtlExt1 = formAnswers.find(
+      (fA) => Object.keys(fA)[0] === 'ttlext1'
     );
+    const formAnswerExt1 = formAnswers.find(
+      (fA) => Object.keys(fA)[0] === 'ext1'
+    );
+
+    if (
+      formAnswerTtlExt1["ttlext1"].value !== undefined &&
+      formAnswerExt1["ext1"].value !== undefined &&
+      parseInt(formAnswerExt1["ext1"].value) > 0
+    ) {
+      this.sendMessage(
+        { name: formAnswerTtlExt1["ttlext1"].value, icon: "" },
+        parseInt(formAnswerExt1["ext1"].value)
+      );
+    }
+
+    const formAnswerTtlExt2 = formAnswers.find(
+      (fA) => Object.keys(fA)[0] === 'ttlext2'
+    );
+    const formAnswerExt2 = formAnswers.find(
+      (fA) => Object.keys(fA)[0] === 'ext2'
+    );
+
+    if (
+      formAnswerTtlExt2["ttlext2"]?.value !== undefined &&
+      formAnswerExt2["ext2"]?.value !== undefined &&
+      parseInt(formAnswerExt2["ext2"]?.value) > 0
+    ) {
+      this.sendMessage(
+        { name: formAnswerTtlExt2["ttlext2"].value, icon: null },
+        parseInt(formAnswerExt2["ext2"].value)
+      );
+    }
   }
 
-  async snackMessages(
-    vrrdMex,
-    vrrdFri,
-    vrrdKro,
-    vrrdKipc,
-    vrrdKips,
-    vrrdKaa,
-    snackVoorraad,
-    vrrdTtlext1,
-    vrrdext1,
-    vrrdTtlext2,
-    vrrdext2
-  ) {
-    console.log(vrrdKipc);
-    if (vrrdMex > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":mexicano: Mexicaantje _(voorraad: " + vrrdMex + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdFri > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":frikandel: Frikandel _(voorraad: " + vrrdFri + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdKro > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":kroket: Kroket _(voorraad: " + vrrdKro + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdKipc > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":kipcorn: Kipcorn _(voorraad: " + vrrdKipc + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdKips > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":crispy_chick_spicy: Cripsy chicken spicy _(voorraad: " + vrrdKips + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdKaa > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: ":kaassoufle: Kaassouflé _(voorraad: " + vrrdKaa + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdext1 > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: vrrdTtlext1 + " _(voorraad: " + vrrdext1 + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
-    if (vrrdext2 > 0)
-      await axios.post(
-        urlMessage,
-        {
-          channel: channel,
-          text: vrrdTtlext2 + " _(voorraad: " + vrrdext2 + ")_",
-        },
-        { headers: { authorization: `Bearer ${slackToken}` } }
-      );
+  async sendMessage(snack, amount) {
+    const icon = snack?.icon ? `:${snack.icon}: ` : '';
+    await axios.post(
+      urlMessage,
+      {
+        channel: channel,
+        ts: Date.now(), // For ordering messages
+        text: `${icon}${snack.name} _(voorraad: ${amount})_`,
+      },
+      { headers: { authorization: `Bearer ${slackToken}` } }
+    );
   }
 
   async postAirfryerModal(req, res) {
@@ -196,101 +116,9 @@ module.exports = class airfryer {
               emoji: true,
             },
           },
+          ...this.createSnacksJson(),
           {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "mex",
-            },
-            label: {
-              type: "plain_text",
-              text: "Mexicaantje",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "fri",
-            },
-            label: {
-              type: "plain_text",
-              text: "Frikandel",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "kro",
-            },
-            label: {
-              type: "plain_text",
-              text: "Kroket",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "kipc",
-            },
-            label: {
-              type: "plain_text",
-              text: "Kipcorn",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "kips",
-            },
-            label: {
-              type: "plain_text",
-              text: "Cripsy chicken spicy",
-              emoji: true,
-            },
-          },
-          {
-            type: "input",
-            element: {
-              type: "number_input",
-              is_decimal_allowed: false,
-              action_id: "kaa",
-            },
-            label: {
-              type: "plain_text",
-              text: "Kaassouflé",
-              emoji: true,
-            },
-          },
-          {
-            type: "actions",
-            elements: [
-              {
-                type: "checkboxes",
-                options: [
-                  {
-                    text: {
-                      type: "mrkdwn",
-                      text: "*Vul snacks aan*",
-                    },
-                    value: "vulAan",
-                  },
-                ],
-                action_id: "vulSnacks",
-              },
-            ],
+            type: "divider",
           },
           {
             type: "input",
@@ -356,5 +184,26 @@ module.exports = class airfryer {
         "content-type": "application/json",
       },
     });
+  }
+
+  createSnacksJson() {
+    const snackJson = [];
+    this.snacksArr.forEach((snack) => {
+      snackJson.push({
+        type: "input",
+        element: {
+          type: "number_input",
+          is_decimal_allowed: false,
+          action_id: snack.key,
+        },
+        label: {
+          type: "plain_text",
+          text: snack.name,
+          emoji: true,
+        },
+      });
+    });
+
+    return snackJson;
   }
 };
