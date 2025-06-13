@@ -5,8 +5,8 @@ const slackToken = env.slack.slack_key;
 const urlView = "https://slack.com/api/views.open";
 const urlMessage = "https://slack.com/api/chat.postMessage";
 
-const channel = env.slack.lunch_id; //lunch
-// const channel = env.slack.richards_id; //Richard
+// const channel = env.slack.lunch_id; //lunch
+const channel = env.slack.richards_id; //Richard
 
 //Airfryer class with all function for /airfryer in slack
 module.exports = class airfryer {
@@ -25,19 +25,21 @@ module.exports = class airfryer {
     { key: "bam", name: "Bamischijf", icon: "bami_schijf" },
   ];
 
-  getVoorraad(payload) {
+  async getVoorraad(payload) {
     let values = payload.view.state.values;
     let formAnswers = Object.values(values);
 
-    this.snacksArr.forEach(async (snack, index) => {
+    console.log(this.snacksArr);
+    for (let index = 0; index < this.snacksArr.length; index++) {
+      const snack = this.snacksArr[index];
       const formAnswer = formAnswers.find(
         (fA) => Object.keys(fA)[0] === snack.key
       );
       const amount = formAnswer[snack.key].value;
       if (amount > 0) {
-        this.sendMessage(snack, amount);
+        await this.sendMessage(snack, amount);
       }
-    });
+    };
 
     const formAnswerTtlExt1 = formAnswers.find(
       (fA) => Object.keys(fA)[0] === 'ttlext1'
@@ -82,7 +84,6 @@ module.exports = class airfryer {
       urlMessage,
       {
         channel: channel,
-        ts: Date.now(), // For ordering messages
         text: `${icon}${snack.name} _(voorraad: ${amount})_`,
       },
       { headers: { authorization: `Bearer ${slackToken}` } }
