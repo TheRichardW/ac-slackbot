@@ -22,6 +22,7 @@ module.exports = class airfryer {
     { key: "kips", name: "Crispy chicken spicy", icon: "crispy_chick_spicy" },
     { key: "kaa", name: "Kaassouflé", icon: "kaassoufle" },
     { key: "cbi", name: "Chicken bites", icon: "chicken_bites" },
+    { key: "bam", name: "Bamischijf", icon: "bami_schijf" },
   ];
 
   getVoorraad(payload) {
